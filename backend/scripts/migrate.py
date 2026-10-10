@@ -11,8 +11,7 @@ import subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-BACKEND_DIR = BASE_DIR / "backend"
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BACKEND_DIR))
 
 # Load backend environment variables
@@ -20,8 +19,8 @@ load_dotenv(BACKEND_DIR / ".env")
 
 
 async def apply_sql_migrations():
-    """Apply all .sql files in scripts/migrations directory in sorted order."""
-    migrations_dir = BASE_DIR / "scripts" / "migrations"
+    """Apply all .sql files in backend/migrations directory in sorted order."""
+    migrations_dir = BACKEND_DIR / "migrations"
     if not migrations_dir.exists():
         print(f"No migrations directory found at {migrations_dir}")
         return

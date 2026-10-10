@@ -6,12 +6,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
-ROOT_DIR = BACKEND_DIR.parent
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(str(BACKEND_DIR / ".env"), str(ROOT_DIR / ".env"), ".env"),
+        env_file=(str(BACKEND_DIR / ".env"), ".env"),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",

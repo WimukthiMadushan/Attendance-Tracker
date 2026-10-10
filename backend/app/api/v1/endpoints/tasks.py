@@ -1,77 +1,103 @@
-from datetime import date
 from typing import List, Optional
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query, status
 
-from app.core.database import get_db
-from app.schemas.task import DailyTaskResponse
+from app.core.database import db_client, get_prisma
+from app.schemas.task_item import TaskItemCreate, TaskItemResponse
 
 router = APIRouter()
 
 
-@router.get("", response_model=List[DailyTaskResponse])
-async def list_daily_tasks(
+@router.get("", response_model=List[TaskItemResponse])
+async def list_task_items(
     employee_id: Optional[str] = Query(None),
-    task_date: Optional[date] = Query(None, alias="date"),
 ):
-    """Query unified daily tasks across all employees."""
-    db = get_db()
-    if db is None or not db.is_connected():
+    """Query task items across all employees."""
+    prisma = get_prisma()
+    if prisma is not None and prisma.is_connected():
+        where_filter = {}
+        if employee_id:
+            where_filter["employeeId"] = employee_id
+
+        try:
+            tasks = await prisma.taskitem.find_many(
+                where=where_filter,
+                order={"createdAt": "desc"}
+            )
+            return [
+                {
+                    "id": t.id,
+                    "employee_id": t.employeeId,
+                    "task_description": t.taskDescription,
+                    "created_at": t.createdAt,
+                }
+                for t in tasks
+            ]
+        except Exception:
+            pass
+
+    if db_client.is_connected:
+        query = "SELECT * FROM task_items WHERE 1=1"
+        params = []
+        if employee_id:
+            params.append(employee_id)
+            query += f" AND employee_id = ${len(params)}"
+        query += " ORDER BY created_at DESC"
+
+        rows = await db_client.fetch(query, *params)
         return [
             {
-                "id": "task-demo-1",
-                "employee_id": "emp-demo-1",
-                "attendance_log_id": "att-demo-1",
-                "date": "2026-10-10",
-                "description": "Implemented WhatsApp webhook idempotency handler with E.164 phone verification",
-                "duration_minutes": 120,
-                "category": "Development",
-                "status": "COMPLETED",
-                "raw_message": "Source: wamid.test_001",
-                "ai_confidence": 0.95,
-                "created_at": "2026-10-10T11:00:00Z",
-                "updated_at": "2026-10-10T11:00:00Z",
+                "id": r["id"],
+                "employee_id": r["employee_id"],
+                "task_description": r["task_description"],
+                "created_at": r["created_at"],
             }
+            for r in rows
         ]
 
-    where_filter = {}
-    if employee_id:
-        where_filter["employeeId"] = employee_id
-    if task_date:
-        where_filter["date"] = task_date
+    # Offline mock fallback
+    return [
+        {
+            "id": "task-demo-1",
+            "employee_id": "emp-demo-1",
+            "task_description": "Configured database layer and connection pooling",
+            "created_at": "2026-10-10T11:00:00Z",
+        }
+    ]
 
-    try:
-        tasks = await db.dailytask.find_many(where=where_filter, order={"createdAt": "desc"})
-        return [
-            {
-                "id": t.id,
-                "employee_id": t.employeeId,
-                "attendance_log_id": t.attendanceLogId,
-                "date": t.date,
-                "description": t.description,
-                "duration_minutes": t.durationMinutes,
-                "category": t.category,
-                "status": t.status,
-                "raw_message": t.rawMessage,
-                "ai_confidence": t.aiConfidence,
-                "created_at": t.createdAt,
-                "updated_at": t.updatedAt,
+
+@router.post("", response_model=TaskItemResponse, status_code=status.HTTP_201_CREATED)
+async def create_task_item(payload: TaskItemCreate):
+    """Create a new task item for an employee."""
+    prisma = get_prisma()
+    if prisma is not None and prisma.is_connected():
+        created = await prisma.taskitem.create(
+            data={
+                "employeeId": payload.employee_id,
+                "taskDescription": payload.task_description,
             }
-            for t in tasks
-        ]
-    except Exception:
-        return [
-            {
-                "id": "task-demo-1",
-                "employee_id": "emp-demo-1",
-                "attendance_log_id": "att-demo-1",
-                "date": "2026-10-10",
-                "description": "Implemented WhatsApp webhook idempotency handler with E.164 phone verification",
-                "duration_minutes": 120,
-                "category": "Development",
-                "status": "COMPLETED",
-                "raw_message": "Source: wamid.test_001",
-                "ai_confidence": 0.95,
-                "created_at": "2026-10-10T11:00:00Z",
-                "updated_at": "2026-10-10T11:00:00Z",
-            }
-        ]
+        )
+        return {
+            "id": created.id,
+            "employee_id": created.employeeId,
+            "task_description": created.taskDescription,
+            "created_at": created.createdAt,
+        }
+
+    if db_client.is_connected:
+        row = await db_client.fetchrow(
+            """
+            INSERT INTO task_items (employee_id, task_description)
+            VALUES ($1, $2)
+            RETURNING *;
+            """,
+            payload.employee_id,
+            payload.task_description,
+        )
+        return {
+            "id": row["id"],
+            "employee_id": row["employee_id"],
+            "task_description": row["task_description"],
+            "created_at": row["created_at"],
+        }
+
+    raise HTTPException(status_code=503, detail="Database not connected")
