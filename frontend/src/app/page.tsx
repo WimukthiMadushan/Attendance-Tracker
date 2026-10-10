@@ -13,13 +13,11 @@ import { fetchEmployees, fetchAttendance, fetchTasks } from "@/lib/api";
 
 export default async function DashboardPage() {
   const employees = await fetchEmployees();
-  const attendance = await fetchAttendance();
   const tasks = await fetchTasks();
 
   const activeCount = employees.filter((e) => e.is_active).length;
-  const presentCount = attendance.filter((a) => a.status === "PRESENT").length;
-  const totalHours = attendance.reduce((acc, curr) => acc + (curr.total_hours || 0), 0);
   const completedTasks = tasks.filter((t) => t.status === "COMPLETED").length;
+  const totalTasks = tasks.length;
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -28,15 +26,15 @@ export default async function DashboardPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white">HR Executive Dashboard</h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Real-time telemetry of WhatsApp check-ins, AI parsed task logs, and payroll hours.
+            Real-time management of WhatsApp task submissions and employee records.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
-            href="/attendance"
+            href="/tasks"
             className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
           >
-            <span>View Attendance Matrix</span>
+            <span>View Tasks Directory</span>
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
@@ -62,33 +60,33 @@ export default async function DashboardPage() {
 
         <div className="glass-panel p-5 rounded-2xl relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Present Today</span>
+            <span className="text-xs font-medium text-muted-foreground">Total Daily Tasks</span>
             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-bold text-white">{presentCount}</span>
-            <span className="text-xs text-muted-foreground ml-2">checked in</span>
+            <span className="text-2xl font-bold text-white">{totalTasks}</span>
+            <span className="text-xs text-muted-foreground ml-2">recorded</span>
           </div>
           <div className="mt-2 text-[11px] text-emerald-400 flex items-center gap-1">
-            <span>Unified [employee_id, date] log</span>
+            <span>Logged via WhatsApp Cloud API</span>
           </div>
         </div>
 
         <div className="glass-panel p-5 rounded-2xl relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Tracked Hours Today</span>
+            <span className="text-xs font-medium text-muted-foreground">Completed Tasks</span>
             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
               <Clock className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-bold text-white">{totalHours.toFixed(1)}h</span>
-            <span className="text-xs text-muted-foreground ml-2">accumulated</span>
+            <span className="text-2xl font-bold text-white">{completedTasks}</span>
+            <span className="text-xs text-muted-foreground ml-2">finished</span>
           </div>
           <div className="mt-2 text-[11px] text-muted-foreground">
-            Auto-calculated on clock out
+            Processed & indexed
           </div>
         </div>
 

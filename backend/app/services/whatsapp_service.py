@@ -5,7 +5,7 @@ import httpx
 from app.core.config import settings
 from app.schemas.whatsapp import InboundMessageDetail
 from app.services.llm_parser_service import llm_parser_service
-from app.services.attendance_service import attendance_service
+from app.services.task_service import task_service
 
 logger = logging.getLogger("attendance_tracker.whatsapp_service")
 
@@ -38,7 +38,7 @@ class WhatsAppService:
             return {"status": "error", "message_id": message_id}
 
         # 3. Persist tasks if present
-        success, reply_text, employee_id = await attendance_service.process_parsed_message(
+        success, reply_text, employee_id = await task_service.process_parsed_message(
             sender_phone=sender_phone,
             parsed=parsed,
             raw_message_id=message_id,

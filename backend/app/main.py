@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="WhatsApp-based daily task tracking and payroll attendance system with HR management web portal",
+    description="WhatsApp-based daily task tracking and HR management web portal",
     version="1.0.0",
     lifespan=lifespan,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
