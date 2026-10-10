@@ -77,9 +77,9 @@ class InboundMessageDetail(BaseModel):
     message_id: str
     sender_phone: str
     text_body: str
-    timestamp: str
+    timestamp: str = "0"
     message_type: str = "text"
-    raw_payload: Dict[str, Any]
+    raw_payload: Dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("sender_phone")
     def validate_e164(cls, v: str) -> str:
