@@ -1,4 +1,4 @@
-// Prisma Schema for Attendance & Task Tracker
+// Prisma Schema for WhatsApp Task Tracker
 // Clean 3-entity schema: departments, employees, task_items
 
 datasource db {

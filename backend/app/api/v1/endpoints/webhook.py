@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.schemas.whatsapp import InboundMessageDetail, normalize_to_e164
 from app.services.whatsapp_service import whatsapp_service
 
-logger = logging.getLogger("attendance_tracker.webhook")
+logger = logging.getLogger("task_tracker.webhook")
 
 router = APIRouter()
 

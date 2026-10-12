@@ -4,8 +4,8 @@ import { Sidebar } from "@/components/sidebar";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
-  title: "HR Portal | WhatsApp Attendance & Task Tracker",
-  description: "Enterprise WhatsApp-driven attendance, task logging, and payroll management portal.",
+  title: "HR Portal | WhatsApp Task Tracker",
+  description: "Enterprise WhatsApp-driven task tracking and HR management portal.",
 };
 
 export default function RootLayout({

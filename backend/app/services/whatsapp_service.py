@@ -7,7 +7,7 @@ from app.schemas.whatsapp import InboundMessageDetail
 from app.services.llm_parser_service import llm_parser_service
 from app.services.task_service import task_service
 
-logger = logging.getLogger("attendance_tracker.whatsapp_service")
+logger = logging.getLogger("task_tracker.whatsapp_service")
 
 
 class WhatsAppService:

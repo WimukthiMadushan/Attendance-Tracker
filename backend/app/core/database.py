@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, urlparse
 import asyncpg
 from app.core.config import settings
 
-logger = logging.getLogger("attendance_tracker.db")
+logger = logging.getLogger("task_tracker.db")
 
 
 def _sanitize_dsn(database_url: str) -> tuple[str, Optional[str]]:

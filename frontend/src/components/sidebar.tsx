@@ -32,7 +32,7 @@ export function Sidebar() {
         </div>
         <div>
           <h1 className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
-            AutoAttendance
+            AutoTracker
           </h1>
           <p className="text-[11px] text-muted-foreground font-mono">WhatsApp AI & HR</p>
         </div>

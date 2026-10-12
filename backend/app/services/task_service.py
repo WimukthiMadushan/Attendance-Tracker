@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 from app.core.database import db_client, get_prisma
 from app.schemas.ai_parser import ParsedEmployeeMessage
 
-logger = logging.getLogger("attendance_tracker.task_service")
+logger = logging.getLogger("task_tracker.task_service")
 
 
 class TaskService:

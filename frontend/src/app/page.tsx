@@ -9,7 +9,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
-import { fetchEmployees, fetchAttendance, fetchTasks } from "@/lib/api";
+import { fetchEmployees, fetchTasks } from "@/lib/api";
 
 export default async function DashboardPage() {
   const employees = await fetchEmployees();
@@ -120,7 +120,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <p className="text-xs text-slate-300 mt-3 leading-relaxed">
-            Zero per-employee tables. All attendance logs and tasks are joined by foreign keys with composite unique constraints (<code className="text-purple-300 font-mono">@@unique([employeeId, date])</code>).
+            Zero per-employee tables. All departments, employees, and task items are relationally joined by foreign keys with optimized indexing.
           </p>
         </div>
 

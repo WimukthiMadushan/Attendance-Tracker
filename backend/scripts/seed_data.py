@@ -152,7 +152,7 @@ async def seed():
             ("EMP-103", "Reviewed quarterly performance appraisals and compensation bands"),
             ("EMP-104", "Inspected server resource utilization across production database clusters"),
             ("EMP-104", "Set up automated backup verification jobs on local storage"),
-            ("EMP-105", "Prepared client proposal deck for Q4 enterprise attendance software rollout"),
+            ("EMP-105", "Prepared client proposal deck for Q4 enterprise task management rollout"),
             ("EMP-105", "Conducted product walkthrough demo with regional partner teams"),
             ("EMP-106", "Resolved 14 incoming support inquiries regarding employee code formatting"),
             ("EMP-106", "Documented troubleshooting guide for WhatsApp webhook delivery errors"),

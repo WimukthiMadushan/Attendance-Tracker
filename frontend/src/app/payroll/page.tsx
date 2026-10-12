@@ -1,37 +1,23 @@
 import { Receipt, DollarSign, Calendar, TrendingUp } from "lucide-react";
-import { fetchEmployees, fetchAttendance } from "@/lib/api";
+import { fetchEmployees } from "@/lib/api";
 
 export default async function PayrollPage() {
   const employees = await fetchEmployees();
-  const attendance = await fetchAttendance();
-
-  // Aggregate hours by employee
-  const hoursMap = new Map<string, number>();
-  attendance.forEach((a) => {
-    const current = hoursMap.get(a.employee_id) || 0;
-    hoursMap.set(a.employee_id, current + (a.total_hours || 0));
-  });
 
   const payrollSummary = employees.map((emp) => {
-    const regularHours = Math.min(hoursMap.get(emp.id) || 40, 40);
-    const overtimeHours = Math.max((hoursMap.get(emp.id) || 40) - 40, 0);
-    const regularPay = regularHours * emp.hourly_rate;
-    const overtimePay = overtimeHours * (emp.hourly_rate * 1.5);
-    const grossPay = regularPay + overtimePay;
-    const deductions = grossPay * 0.05; // 5% standard deductions
-    const netPay = grossPay - deductions;
+    const baseSalary = Number(emp.monthly_base_salary) || 150000;
+    const deductions = baseSalary * 0.05; // 5% statutory tax / deduction
+    const netPay = baseSalary - deductions;
 
     return {
       emp,
-      regularHours,
-      overtimeHours,
-      grossPay,
+      baseSalary,
       deductions,
       netPay,
     };
   });
 
-  const totalGrossPayout = payrollSummary.reduce((acc, p) => acc + p.grossPay, 0);
+  const totalGrossPayout = payrollSummary.reduce((acc, p) => acc + p.baseSalary, 0);
   const totalNetPayout = payrollSummary.reduce((acc, p) => acc + p.netPay, 0);
 
   return (
@@ -43,7 +29,7 @@ export default async function PayrollPage() {
             Payroll Processing Portal
           </h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Automated payroll calculated directly from unified attendance tracking and hourly rates.
+            Automated monthly payroll calculated from employee base compensation.
           </p>
         </div>
       </div>
@@ -51,17 +37,17 @@ export default async function PayrollPage() {
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="glass-panel p-5 rounded-2xl">
-          <span className="text-xs text-muted-foreground">Current Payroll Period</span>
-          <p className="text-lg font-bold text-white mt-1">October 2026 (Bi-Weekly 1)</p>
-          <p className="text-xs text-emerald-400 mt-1">Status: Open / Dynamic</p>
+          <span className="text-xs text-muted-foreground">Current Payroll Cycle</span>
+          <p className="text-lg font-bold text-white mt-1">Monthly Active Cycle</p>
+          <p className="text-xs text-emerald-400 mt-1">Status: Open / Active</p>
         </div>
         <div className="glass-panel p-5 rounded-2xl">
-          <span className="text-xs text-muted-foreground">Total Gross Estimated</span>
+          <span className="text-xs text-muted-foreground">Total Base Salary Budget</span>
           <p className="text-2xl font-bold text-white mt-1">${totalGrossPayout.toFixed(2)}</p>
-          <p className="text-xs text-muted-foreground mt-1">Before tax and statutory deductions</p>
+          <p className="text-xs text-muted-foreground mt-1">Gross base compensation</p>
         </div>
         <div className="glass-panel p-5 rounded-2xl">
-          <span className="text-xs text-muted-foreground">Total Net Payable</span>
+          <span className="text-xs text-muted-foreground">Total Net Disbursement</span>
           <p className="text-2xl font-bold text-emerald-400 mt-1">${totalNetPayout.toFixed(2)}</p>
           <p className="text-xs text-muted-foreground mt-1">Estimated direct disbursement</p>
         </div>
@@ -84,26 +70,22 @@ export default async function PayrollPage() {
               <tr>
                 <th className="p-4">Employee</th>
                 <th className="p-4">Code</th>
-                <th className="p-4">Hourly Rate</th>
-                <th className="p-4">Regular Hrs</th>
-                <th className="p-4">OT Hrs</th>
-                <th className="p-4">Gross Pay</th>
-                <th className="p-4">Deductions</th>
-                <th className="p-4">Net Pay</th>
+                <th className="p-4">Type</th>
+                <th className="p-4">Monthly Base Salary</th>
+                <th className="p-4">Deductions (5%)</th>
+                <th className="p-4">Net Salary</th>
                 <th className="p-4">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20 text-slate-300">
-              {payrollSummary.map(({ emp, regularHours, overtimeHours, grossPay, deductions, netPay }) => (
+              {payrollSummary.map(({ emp, baseSalary, deductions, netPay }) => (
                 <tr key={emp.id} className="hover:bg-secondary/20 transition-colors">
                   <td className="p-4 font-semibold text-white">
-                    {emp.first_name} {emp.last_name}
+                    {emp.full_name || emp.employee_code}
                   </td>
                   <td className="p-4 font-mono text-muted-foreground">{emp.employee_code}</td>
-                  <td className="p-4 font-mono text-emerald-400">${emp.hourly_rate}/hr</td>
-                  <td className="p-4 font-mono">{regularHours.toFixed(1)} hrs</td>
-                  <td className="p-4 font-mono">{overtimeHours.toFixed(1)} hrs</td>
-                  <td className="p-4 font-medium text-white">${grossPay.toFixed(2)}</td>
+                  <td className="p-4 font-mono text-emerald-400">{emp.employment_type || "FULL_TIME"}</td>
+                  <td className="p-4 font-medium text-white">${baseSalary.toFixed(2)}</td>
                   <td className="p-4 text-red-400">-${deductions.toFixed(2)}</td>
                   <td className="p-4 font-bold text-emerald-400">${netPay.toFixed(2)}</td>
                   <td className="p-4">

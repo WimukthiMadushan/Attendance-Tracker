@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # API Base
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "WhatsApp Attendance & Task Tracker"
+    PROJECT_NAME: str = "WhatsApp Task Tracker"
     ENVIRONMENT: str = "development"
     SECRET_KEY: str = "super_secret_development_key_change_in_production"
     BACKEND_HOST: str = "0.0.0.0"

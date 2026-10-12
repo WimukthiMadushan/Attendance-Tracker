@@ -1,1 +1,1 @@
-"""WhatsApp Attendance and Task Tracker Backend Application Package."""
+"""WhatsApp Task Tracker Backend Application Package."""

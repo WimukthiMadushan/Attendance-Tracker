@@ -7,7 +7,7 @@ import httpx
 from app.core.config import settings
 from app.schemas.ai_parser import ParsedEmployeeMessage, IntentType, ExtractedTask
 
-logger = logging.getLogger("attendance_tracker.llm")
+logger = logging.getLogger("task_tracker.llm")
 
 SYSTEM_INSTRUCTION = """You are an AI assistant for an enterprise WhatsApp daily task tracking system.
 Your job is to analyze incoming WhatsApp messages from employees and extract structured task descriptions.
